@@ -6,8 +6,8 @@
   "build": {
     "targetFolder": "dist",
     "sourceFolder": "webapp",
-    "buildRequired": true,
-    "lastBuildDateTime": "Sun, 18 Feb 2018 23:54:23 GMT"
+    "buildRequired": false,
+    "lastBuildDateTime": "Thu, 19 Apr 2018 17:54:27 GMT"
   },
   "generation": [
     {
@@ -43,6 +43,6 @@
   "hcpdeploy": {
     "account": "i816037trial",
     "name": "receiptsrecognition",
-    "lastVersionWeTriedToDeploy": "1.0.1"
+    "lastVersionWeTriedToDeploy": "1.0.3"
   }
 }

@@ -1,0 +1,73 @@
+<mvc:View xmlns:mvc="sap.ui.core.mvc" xmlns:unified="sap.ui.unified" xmlns:l="sap.ui.layout" xmlns="sap.m" xmlns:f="sap.ui.layout.form"
+	xmlns:custom="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" controllerName="sapui5ml.controller.main"
+	displayBlock="true">
+	<App>
+		<pages>
+			<Page title="{i18n>appTitle}">
+				<content visible="{= typeof ${OCR_Data>/resultVisible} !== 'undefined'}">
+					<IconTabBar id="idIconTabBarMulti" expanded="{device>/isNoPhone}" class="sapUiResponsiveContentPadding">
+						<items>
+							<IconTabFilter icon="sap-icon://document-text">
+								<VBox class="sapUiSmallMargin">
+									<TextArea class="sapUiTinyMargin" value="{OCR_Data>/resultOCR}" placeholder="Output Text" editable="false" growing="true"
+										growingMaxLines="15" width="100%" visible="{= typeof ${OCR_Data>/resultOCR} !== 'undefined'}"/>
+								</VBox>
+							</IconTabFilter>
+							<IconTabFilter icon="sap-icon://form" visible="{= typeof ${OCR_Data>/resultOCR} !== 'undefined'}">
+								<VBox class="sapUiSmallMargin">
+									<f:SimpleForm editable="false" layout="ResponsiveGridLayout" title="Expense Details" labelSpanXL="3" labelSpanL="3" labelSpanM="3"
+										labelSpanS="12" adjustLabelSpan="false" emptySpanXL="4" emptySpanL="4" emptySpanM="4" emptySpanS="0" columnsXL="1" columnsL="1" columnsM="1"
+										singleContainerFullSize="false">
+										<f:content>
+											<Label text="Date"/>
+											<Text text="{ML_Data>/date}"/>
+											<Label text="Amount / Currency"/>
+											<Text text="{ML_Data>/amount} {ML_Data>/currency}"/>
+											<Label text="Company"/>
+											<Text text="{ML_Data>/company}"/>
+											<Label text="Location"/>
+											<Text text="{ML_Data>/city}"/>
+										</f:content>
+									</f:SimpleForm>
+								</VBox>
+							</IconTabFilter>
+							<IconTabFilter icon="sap-icon://background" visible="{= typeof ${OCR_Data>/resultImageUrl} !== 'undefined' }">
+								<VBox class="sapUiSmallMargin">
+									<Image src="{OCR_Data>/resultImageUrl}" tooltip="canvas" densityAware="false">
+										<layoutData>
+											<FlexItemData growFactor="1"/>
+										</layoutData>
+									</Image>
+								</VBox>
+							</IconTabFilter>
+							<IconTabFilter icon="sap-icon://pdf-attachment" visible="{= typeof ${OCR_Data>/resultPdfUrl} !== 'undefined' }">
+								<VBox class="sapUiSmallMargin">
+									<ScrollContainer height="100%" width="100%" horizontal="true" vertical="true">
+										<FlexBox direction="Column" renderType="Div" class="sapUiSmallMargin">
+											<PDFViewer source="{OCR_Data>/resultPdfUrl}" title="PDF File" height="500px"
+												width="100%">
+												<layoutData>
+													<FlexItemData growFactor="1"/>
+												</layoutData>
+											</PDFViewer>
+										</FlexBox>
+									</ScrollContainer>
+								</VBox>
+							</IconTabFilter>
+						</items>
+					</IconTabBar>
+				</content>
+				<footer>
+					<Toolbar width="100%">
+						<content>
+							<unified:FileUploader id="fileUploader" buttonOnly="true" buttonText="Recognize receipt (Image/PDF)" sameFilenameAllowed="true"
+								multiple="false" fileType="png,jpeg,jpg,bmp,tiff,tif,pdf"
+								mimeType="image/png,image/jpg,image/jpeg,image/bmp,image/tiff,application/pdf,application/x-pdf" typeMissmatch="fileTypeMissmatch"
+								change="getOCR" custom:mode="xhr" uploadUrl="{ML_Api>/urlOCR}"></unified:FileUploader>
+						</content>
+					</Toolbar>
+				</footer>
+			</Page>
+		</pages>
+	</App>
+</mvc:View>
