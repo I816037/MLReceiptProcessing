@@ -67,6 +67,7 @@ sap.ui.define([
 				formData.append("output_type", "txt");
 				formData.append("page_seg_mode", "1");
 				formData.append("model_type", "lstm_standard");
+				//teste commenbt
 
 				// increase request countor to close busy indicator
 				this.requestCount++;
