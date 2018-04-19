@@ -62,10 +62,21 @@ sap.ui.define([
 
 				// create the form data to be sent in the request
 				var formData = new window.FormData();
-				//formData.append("files", srcFile, srcFile.name);
-				formData.append('file', this.getView().byId("fileUploader").getFocusDomRef().files[fileIndex]);
+/*				var oParam = {
+					files: srcFile,
+					options: {
+						"lang" : "en", 
+						"output_type": "txt",
+						"page_seg_mode": "1", 
+						"model_type": "lstm_standard"
+					}
+				};*/
+				formData.append("files", srcFile, srcFile.name);
+				//formData.append('file', this.getView().byId("fileUploader").getFocusDomRef().files[fileIndex]);
 				formData.append("lang", "en");
 				formData.append("output_type", "txt");
+				formData.append("page_seg_mode", "1");
+				formData.append("model_type", "lstm_standard");
 
 				// increase request countor to close busy indicator
 				this.requestCount++;
@@ -77,9 +88,12 @@ sap.ui.define([
 		},
 
 		onOCRDetectedSuccess: function(data) {
-			var result = data.response;
-			//console.log(data);
-			this.getView().getModel(_sOCRDataModelName).setProperty("/resultOCR", result);
+			var aData = data.predictions;
+			var sResult = "";
+			if (aData && data.predictions.length > 0) {
+				sResult = data.predictions[0]; //get first
+			}
+			this.getView().getModel(_sOCRDataModelName).setProperty("/resultOCR", sResult);
 			this.getView().getModel(_sOCRDataModelName).setProperty("/resultVisible", true);
 			if (this._srcFileIsImage === true) {
 				this.getView().getModel(_sOCRDataModelName).setProperty("/resultImageUrl", this._srcImageURL);
