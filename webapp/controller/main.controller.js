@@ -124,7 +124,7 @@ sap.ui.define([
 			jQuery.ajax(ajaxRequest);
 		},
 
-		onSliderChange: function(oEvent) {
+		onBrightnessSliderChange: function(oEvent) {
 			var oImage = sap.ui.getCore().byId(this.createId("idImage"));
 			var oImageDom = document.getElementById(oImage.sId);
 			var oCanvasDom = document.createElement("canvas");
@@ -140,6 +140,24 @@ sap.ui.define([
 				this.revert(true);
 				this.brightness(sValue).render();
 			});
-		}
+		},
+		
+		onSharpenSliderChange: function(oEvent) {
+			var oImage = sap.ui.getCore().byId(this.createId("idImage"));
+			var oImageDom = document.getElementById(oImage.sId);
+			var oCanvasDom = document.createElement("canvas");
+			var oContext = oCanvasDom.getContext("2d");
+			Controller.apply(this, arguments);
+
+			oCanvasDom.width = oImageDom.width;
+			oCanvasDom.height = oImageDom.height;
+			oContext.drawImage(oImageDom, 0, 0);
+			
+			var sValue = oEvent.getParameter("value");
+			_this.Caman("#"+oImage.sId, function() {
+				this.revert(true);
+				this.sharpen(sValue).render();
+			});
+		}		
 	});
 });

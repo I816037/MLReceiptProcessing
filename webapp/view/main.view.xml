@@ -39,8 +39,11 @@
 										</layoutData>
 									</Image>
 									<Text text="Brightness" class="sapUiSmallMarginBottom"/>
-									<Slider id="idSlider1" showAdvancedTooltip="true" enableTickmarks="true" min="-100" max="100" step="5" class="sapUiLargeMarginBottom"
-										width="100%" liveChange="onSliderChange"/>
+									<Slider showAdvancedTooltip="true" enableTickmarks="true" min="-100" max="100" step="5" class="sapUiLargeMarginBottom"
+										width="100%" liveChange="onBrightnessSliderChange"/>
+									<Text text="Sharpen" class="sapUiSmallMarginBottom"/>
+									<Slider showAdvancedTooltip="true" enableTickmarks="true" min="-100" max="100" step="5" class="sapUiLargeMarginBottom"
+										width="100%" liveChange="onSharpenSliderChange"/>										
 								</VBox>
 							</IconTabFilter>
 							<IconTabFilter icon="sap-icon://pdf-attachment" visible="{= typeof ${OCR_Data>/resultPdfUrl} !== 'undefined' }">
