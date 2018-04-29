@@ -1,10 +1,12 @@
 sap.ui.define([
 	"sap/ui/core/mvc/Controller",
 	"sap/m/MessageToast",
-	"sap/ui/model/json/JSONModel"
-], function(Controller, MessageToast, JSONModel) {
+	"sap/ui/model/json/JSONModel",
+	"sapui5ml/CamanJS/dist/caman.full.min"
+], function(Controller, MessageToast, JSONModel, Caman) {
 	"use strict";
-	var _sOCRDataModelName = "OCR_Data",
+	var _this = this,
+	    _sOCRDataModelName = "OCR_Data",
 		_sMLApiModelName = "ML_Api",
 		_srcImageURL = null,
 		_srcPDFURL = null,
@@ -120,6 +122,24 @@ sap.ui.define([
 			ajaxRequest.success = successcallback.bind(this);
 			ajaxRequest.error = failcallback.bind(this);
 			jQuery.ajax(ajaxRequest);
+		},
+
+		onSliderChange: function(oEvent) {
+			var oImage = sap.ui.getCore().byId(this.createId("idImage"));
+			var oImageDom = document.getElementById(oImage.sId);
+			var oCanvasDom = document.createElement("canvas");
+			var oContext = oCanvasDom.getContext("2d");
+			Controller.apply(this, arguments);
+
+			oCanvasDom.width = oImageDom.width;
+			oCanvasDom.height = oImageDom.height;
+			oContext.drawImage(oImageDom, 0, 0);
+			
+			var sValue = oEvent.getParameter("value");
+			_this.Caman("#"+oImage.sId, function() {
+				this.revert(true);
+				this.brightness(sValue).render();
+			});
 		}
 	});
 });

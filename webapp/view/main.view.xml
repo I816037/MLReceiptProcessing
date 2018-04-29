@@ -33,19 +33,21 @@
 							</IconTabFilter>
 							<IconTabFilter icon="sap-icon://background" visible="{= typeof ${OCR_Data>/resultImageUrl} !== 'undefined' }">
 								<VBox class="sapUiSmallMargin">
-									<Image src="{OCR_Data>/resultImageUrl}" tooltip="canvas" densityAware="false">
+									<Image id="idImage" src="{OCR_Data>/resultImageUrl}" tooltip="Uploaded Image" densityAware="false">
 										<layoutData>
 											<FlexItemData growFactor="1"/>
 										</layoutData>
 									</Image>
+									<Text text="Brightness" class="sapUiSmallMarginBottom"/>
+									<Slider id="idSlider1" showAdvancedTooltip="true" enableTickmarks="true" min="-100" max="100" step="5" class="sapUiLargeMarginBottom"
+										width="100%" liveChange="onSliderChange"/>
 								</VBox>
 							</IconTabFilter>
 							<IconTabFilter icon="sap-icon://pdf-attachment" visible="{= typeof ${OCR_Data>/resultPdfUrl} !== 'undefined' }">
 								<VBox class="sapUiSmallMargin">
 									<ScrollContainer height="100%" width="100%" horizontal="true" vertical="true">
 										<FlexBox direction="Column" renderType="Div" class="sapUiSmallMargin">
-											<PDFViewer source="{OCR_Data>/resultPdfUrl}" title="PDF File" height="500px"
-												width="100%">
+											<PDFViewer source="{OCR_Data>/resultPdfUrl}" title="PDF File" height="500px" width="100%">
 												<layoutData>
 													<FlexItemData growFactor="1"/>
 												</layoutData>
