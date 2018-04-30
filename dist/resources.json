@@ -16,6 +16,9 @@
             "name": "Component.js"
         },
         {
+            "name": "CamanJS/dist/caman.full.min.js"
+        },
+        {
             "name": "manifest.json"
         },
         {
