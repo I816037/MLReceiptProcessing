@@ -6,12 +6,14 @@ sap.ui.define([
 ], function(Controller, MessageToast, JSONModel, Caman) {
 	"use strict";
 	var _this = this,
-	    _sOCRDataModelName = "OCR_Data",
+		_sOCRDataModelName = "OCR_Data",
 		_sMLApiModelName = "ML_Api",
+		_srcFile = null,
 		_srcImageURL = null,
 		_srcPDFURL = null,
 		_srcFileIsImage = null,
-		_srcFileIsPDF = null;
+		_srcFileIsPDF = null,
+		_modifiedImage = null;
 
 	return Controller.extend("sapui5ml.controller.main", {
 
@@ -41,20 +43,19 @@ sap.ui.define([
 				"APIKey": apiKey
 			};
 
-			var srcFile = null;
 			this._srcFileIsImage = false;
 			this._srcFileIsPDF = false;
 
 			// keep a reference of the uploaded files
 			//var mode = oControlEvent.getSource().data("mode");
 			for (var fileIndex = 0; fileIndex < oControlEvent.getParameters().files.length; fileIndex++) {
-				srcFile = oControlEvent.getParameters().files[fileIndex];
-				if (srcFile.type.match("image.*")) {
-					this._srcImageURL = URL.createObjectURL(srcFile);
+				_srcFile = oControlEvent.getParameters().files[fileIndex];
+				if (_srcFile.type.match("image.*")) {
+					this._srcImageURL = URL.createObjectURL(_srcFile);
 					this._srcFileIsImage = true;
 					this._srcFileIsPDF = false;
-				} else if (srcFile.type.match("pdf.*")) {
-					this._srcPDFURL = URL.createObjectURL(srcFile);
+				} else if (_srcFile.type.match("pdf.*")) {
+					this._srcPDFURL = URL.createObjectURL(_srcFile);
 					this._srcFileIsImage = false;
 					this._srcFileIsPDF = true;
 				} else {
@@ -64,7 +65,7 @@ sap.ui.define([
 
 				// create the form data to be sent in the request
 				var formData = new window.FormData();
-				formData.append("files", srcFile, srcFile.name);
+				formData.append("files", _srcFile, _srcFile.name);
 				formData.append("lang", "en");
 				formData.append("output_type", "txt");
 				formData.append("page_seg_mode", "1");
@@ -126,38 +127,69 @@ sap.ui.define([
 
 		onBrightnessSliderChange: function(oEvent) {
 			var oImage = sap.ui.getCore().byId(this.createId("idImage"));
-			var oImageDom = document.getElementById(oImage.sId);
-			var oCanvasDom = document.createElement("canvas");
-			var oContext = oCanvasDom.getContext("2d");
-			Controller.apply(this, arguments);
-
-			oCanvasDom.width = oImageDom.width;
-			oCanvasDom.height = oImageDom.height;
-			oContext.drawImage(oImageDom, 0, 0);
-			
 			var sValue = oEvent.getParameter("value");
-			_this.Caman("#"+oImage.sId, function() {
+			_this.Caman("#" + oImage.sId, function() {
 				this.revert(true);
 				this.brightness(sValue).render();
+				_this._modifiedImage = this.toImage();
 			});
 		},
-		
+
 		onSharpenSliderChange: function(oEvent) {
 			var oImage = sap.ui.getCore().byId(this.createId("idImage"));
-			var oImageDom = document.getElementById(oImage.sId);
-			var oCanvasDom = document.createElement("canvas");
-			var oContext = oCanvasDom.getContext("2d");
-			Controller.apply(this, arguments);
-
-			oCanvasDom.width = oImageDom.width;
-			oCanvasDom.height = oImageDom.height;
-			oContext.drawImage(oImageDom, 0, 0);
-			
 			var sValue = oEvent.getParameter("value");
-			_this.Caman("#"+oImage.sId, function() {
+			_this.Caman("#" + oImage.sId, function() {
 				this.revert(true);
 				this.sharpen(sValue).render();
+				_this._modifiedImage = this.toImage();
 			});
-		}		
+		},
+
+		onRerunOCRBtn: function() {
+			if (_this._modifiedImage === undefined) {
+				return;
+			}
+
+			// start the busy indicator
+			this.oBusyIndicator = new sap.m.BusyDialog();
+			this.oBusyIndicator.open();
+
+			var oView = this.getView();
+			var url = oView.getModel(_sMLApiModelName).getProperty("/urlOCR");
+			var apiKey = oView.getModel(_sMLApiModelName).getProperty("/apiKey");
+
+			var sHeaders = {
+				"Accept": "application/json",
+				"APIKey": apiKey
+			};
+
+			var oFile = this.dataURLtoBlob(_this._modifiedImage.src);
+
+			// create the form data to be sent in the request
+			var formData = new window.FormData();
+			formData.append("files", oFile, "filename.png");
+			formData.append("lang", "en");
+			formData.append("output_type", "txt");
+			formData.append("page_seg_mode", "1");
+			formData.append("model_type", "lstm_standard");
+
+			// call the service
+			//this.callService(this, service, url, type, mode, apiKey, formData, processResult);
+			this.webRequest(formData, url, sHeaders, this.onOCRDetectedSuccess.bind(this), this.onOCRDetectedFailed);
+		},
+
+		dataURLtoBlob: function(dataurl) {
+			var arr = dataurl.split(","),
+				mime = arr[0].match(/:(.*?);/)[1],
+				bstr = atob(arr[1]),
+				n = bstr.length,
+				u8arr = new Uint8Array(n);
+			while (n--) {
+				u8arr[n] = bstr.charCodeAt(n);
+			}
+			return new Blob([u8arr], {
+				type: mime
+			});
+		}
 	});
 });

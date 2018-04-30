@@ -39,11 +39,11 @@
 										</layoutData>
 									</Image>
 									<Text text="Brightness" class="sapUiSmallMarginBottom"/>
-									<Slider showAdvancedTooltip="true" enableTickmarks="true" min="-100" max="100" step="5" class="sapUiLargeMarginBottom"
-										width="100%" liveChange="onBrightnessSliderChange"/>
+									<Slider showAdvancedTooltip="true" enableTickmarks="true" min="-100" max="100" step="5" class="sapUiLargeMarginBottom" width="100%"
+										liveChange="onBrightnessSliderChange"/>
 									<Text text="Sharpen" class="sapUiSmallMarginBottom"/>
-									<Slider showAdvancedTooltip="true" enableTickmarks="true" min="-100" max="100" step="5" class="sapUiLargeMarginBottom"
-										width="100%" liveChange="onSharpenSliderChange"/>										
+									<Slider showAdvancedTooltip="true" enableTickmarks="true" min="-100" max="100" step="5" class="sapUiLargeMarginBottom" width="100%"
+										liveChange="onSharpenSliderChange"/>
 								</VBox>
 							</IconTabFilter>
 							<IconTabFilter icon="sap-icon://pdf-attachment" visible="{= typeof ${OCR_Data>/resultPdfUrl} !== 'undefined' }">
@@ -69,6 +69,7 @@
 								multiple="false" fileType="png,jpeg,jpg,bmp,tiff,tif,pdf"
 								mimeType="image/png,image/jpg,image/jpeg,image/bmp,image/tiff,application/pdf,application/x-pdf" typeMissmatch="fileTypeMissmatch"
 								change="getOCR" custom:mode="xhr" uploadUrl="{ML_Api>/urlOCR}"></unified:FileUploader>
+						    <Button text="Rerun OCR" press="onRerunOCRBtn" ariaLabelledBy="actionButtonLabel"/>
 						</content>
 					</Toolbar>
 				</footer>
