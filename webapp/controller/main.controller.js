@@ -6,7 +6,8 @@ sap.ui.define([
 ], function(Controller, MessageToast, JSONModel, Caman) {
 	"use strict";
 	var _this = this,
-		_sOCRDataModelName = "OCR_Data",
+		_sOCRDataModel = "OCR_Data",
+		_sTextAnalysisDataModel = "TextAnalysis",
 		_sMLApiModelName = "ML_Api",
 		_srcFile = null,
 		_srcImageURL = null,
@@ -20,7 +21,8 @@ sap.ui.define([
 		onInit: function() {
 			//OCR Data Model
 			var oJsonModel = new JSONModel();
-			this.getView().setModel(oJsonModel, _sOCRDataModelName);
+			this.getView().setModel(oJsonModel, _sOCRDataModel);
+			this.getView().setModel(oJsonModel, _sTextAnalysisDataModel);
 		}, // onInit
 
 		fileTypeMissmatch: function(oControlEvent) {
@@ -86,15 +88,18 @@ sap.ui.define([
 			if (aData && data.predictions.length > 0) {
 				sResult = data.predictions[0]; //get first
 			}
-			this.getView().getModel(_sOCRDataModelName).setProperty("/resultOCR", sResult);
-			this.getView().getModel(_sOCRDataModelName).setProperty("/resultVisible", true);
+			this.getView().getModel(_sOCRDataModel).setProperty("/resultOCR", sResult);
+			this.getView().getModel(_sOCRDataModel).setProperty("/resultVisible", true);
 			if (this._srcFileIsImage === true) {
-				this.getView().getModel(_sOCRDataModelName).setProperty("/resultImageUrl", this._srcImageURL);
-				this.getView().getModel(_sOCRDataModelName).setProperty("/resultPdfUrl", undefined);
+				this.getView().getModel(_sOCRDataModel).setProperty("/resultImageUrl", this._srcImageURL);
+				this.getView().getModel(_sOCRDataModel).setProperty("/resultPdfUrl", undefined);
 			} else if (this._srcFileIsPDF === true) {
-				this.getView().getModel(_sOCRDataModelName).setProperty("/resultPdfUrl", this._srcPDFURL);
-				this.getView().getModel(_sOCRDataModelName).setProperty("/resultImageUrl", undefined);
+				this.getView().getModel(_sOCRDataModel).setProperty("/resultPdfUrl", this._srcPDFURL);
+				this.getView().getModel(_sOCRDataModel).setProperty("/resultImageUrl", undefined);
 			}
+
+            //Call Text Analysis API
+			this.callTextAnalysisAPIToken(sResult);
 
 			// close the busy indicator
 			this.oBusyIndicator.close();
@@ -103,10 +108,10 @@ sap.ui.define([
 		onOCRDetectedFailed: function() {
 			var oView = this.getView();
 			//console.log(data);
-			oView.getModel(_sOCRDataModelName).setProperty("/resultOCR", null);
-			oView.getModel(_sOCRDataModelName).setProperty("/resultVisible", false);
-			this.getView().getModel(_sOCRDataModelName).setProperty("/resultImageUrl", undefined);
-			this.getView().getModel(_sOCRDataModelName).setProperty("/resultPdfUrl", undefined);
+			oView.getModel(_sOCRDataModel).setProperty("/resultOCR", null);
+			oView.getModel(_sOCRDataModel).setProperty("/resultVisible", false);
+			this.getView().getModel(_sOCRDataModel).setProperty("/resultImageUrl", undefined);
+			this.getView().getModel(_sOCRDataModel).setProperty("/resultPdfUrl", undefined);
 
 			// close the busy indicator
 			this.oBusyIndicator.close();
@@ -190,6 +195,72 @@ sap.ui.define([
 			return new Blob([u8arr], {
 				type: mime
 			});
+		},
+
+		callTextAnalysisAPIToken: function(sData) {
+			// token
+			var that = this;
+			var clientId = "sb-na-1cd1c18f-0e54-4bf0-b14c-1785834143a9!t1800";
+			var clientSecret = "E+IsgXd/UQYLDlnzQwpIfwdAWwQ=";
+
+			$.ajax({
+				type: "POST",
+				headers: {
+					"Content-Type": "application/x-www-form-urlencoded"
+				},
+				//url: "https://textanalysis.authentication.sap.hana.ondemand.com/oauth/token",
+				url: "/ta-token", //Under Cloud Platform Destinations
+				data: {
+					"client_secret": clientSecret,
+					"client_id": clientId,
+					"grant_type": "client_credentials"
+				},
+				success: function(json) {
+					var token = $(json.access_token);
+					that.callTextAnalysisAPI(token, sData);
+					//                                                                                            console.log("token: " + token);
+				},
+				error: function(jqXHR, status, err) {
+					that.alert("Error occured");
+				}
+			});
+		},
+
+		callTextAnalysisAPI: function(token, sData) {
+			var that = this;
+			$.ajax({
+				type: "POST",
+				headers: {
+					"content-type": "application/json; charset=utf-8",
+					"dataType": "json",
+					"Cache-Control": "no-cache",
+					"Connection": "keep-alive",
+					"Accept-Encoding": "gzip",
+					"Taaas-tenant": "textanalysis",
+					"Taaas-account": "taaas-dev",
+					"Authorization": "Bearer " + token.selector
+				},
+				data: JSON.stringify({
+					"content": sData,
+					"contentType": "text",
+					"requestOptions": {
+						"languages": "en",
+						"baseConfiguration": "entityExtraction"
+					}
+				}),
+				//url: "https://textanalysis-staging.cfapps.sap.hana.ondemand.com/textanalysis/v2/analyze",
+				url: "/ta/v2/analyze", //Under Cloud Platform Destinations
+				success: function(json) {
+					var response = json;
+					that.processTextAnalysisAPI(response);
+				},
+				error: function(jqXHR, status, err) {
+					console.log("Error occured");
+				}
+			});
+		},
+		processTextAnalysisAPI: function(response) {
+			this.getView().getModel(_sOCRDataModel).setProperty("/resultTA", response);	
 		}
 	});
 });

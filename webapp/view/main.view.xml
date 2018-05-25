@@ -7,13 +7,13 @@
 				<content visible="{= typeof ${OCR_Data>/resultVisible} !== 'undefined'}">
 					<IconTabBar id="idIconTabBarMulti" expanded="{device>/isNoPhone}" class="sapUiResponsiveContentPadding">
 						<items>
-							<IconTabFilter icon="sap-icon://document-text">
+							<IconTabFilter icon="sap-icon://document-text" text="OCR Text">
 								<VBox class="sapUiSmallMargin">
 									<TextArea class="sapUiTinyMargin" value="{OCR_Data>/resultOCR}" placeholder="Output Text" editable="false" growing="true"
 										growingMaxLines="15" width="100%" visible="{= typeof ${OCR_Data>/resultOCR} !== 'undefined'}"/>
 								</VBox>
 							</IconTabFilter>
-							<IconTabFilter icon="sap-icon://form" visible="{= typeof ${OCR_Data>/resultOCR} !== 'undefined'}">
+							<IconTabFilter icon="sap-icon://form" text="Form" visible="{= typeof ${OCR_Data>/resultOCR} !== 'undefined'}">
 								<VBox class="sapUiSmallMargin">
 									<f:SimpleForm editable="false" layout="ResponsiveGridLayout" title="Expense Details" labelSpanXL="3" labelSpanL="3" labelSpanM="3"
 										labelSpanS="12" adjustLabelSpan="false" emptySpanXL="4" emptySpanL="4" emptySpanM="4" emptySpanS="0" columnsXL="1" columnsL="1" columnsM="1"
@@ -31,7 +31,7 @@
 									</f:SimpleForm>
 								</VBox>
 							</IconTabFilter>
-							<IconTabFilter icon="sap-icon://background" visible="{= typeof ${OCR_Data>/resultImageUrl} !== 'undefined' }">
+							<IconTabFilter icon="sap-icon://background" text="Image" visible="{= typeof ${OCR_Data>/resultImageUrl} !== 'undefined' }">
 								<VBox class="sapUiSmallMargin">
 									<Image id="idImage" src="{OCR_Data>/resultImageUrl}" tooltip="Uploaded Image" densityAware="false">
 										<layoutData>
@@ -46,7 +46,7 @@
 										liveChange="onSharpenSliderChange"/>
 								</VBox>
 							</IconTabFilter>
-							<IconTabFilter icon="sap-icon://pdf-attachment" visible="{= typeof ${OCR_Data>/resultPdfUrl} !== 'undefined' }">
+							<IconTabFilter icon="sap-icon://pdf-attachment" text="PDF" visible="{= typeof ${OCR_Data>/resultPdfUrl} !== 'undefined' }">
 								<VBox class="sapUiSmallMargin">
 									<ScrollContainer height="100%" width="100%" horizontal="true" vertical="true">
 										<FlexBox direction="Column" renderType="Div" class="sapUiSmallMargin">
@@ -59,6 +59,26 @@
 									</ScrollContainer>
 								</VBox>
 							</IconTabFilter>
+							<IconTabFilter icon="sap-icon://document-text" text="Text Analysis">
+								<VBox class="sapUiSmallMargin">
+									<TextArea class="sapUiTinyMargin" value="{TextAnalysis>/resultTA}" placeholder="Output Text" editable="false" growing="true"
+										growingMaxLines="15" width="100%" visible="{= typeof ${TextAnalysis>/resultTA} !== 'undefined'}"/>
+								</VBox>
+								<f:SimpleForm editable="false" layout="ResponsiveGridLayout" title="Expense Details" labelSpanXL="3" labelSpanL="3" labelSpanM="3"
+									labelSpanS="12" adjustLabelSpan="false" emptySpanXL="4" emptySpanL="4" emptySpanM="4" emptySpanS="0" columnsXL="1" columnsL="1" columnsM="1"
+									singleContainerFullSize="false">
+									<f:content>
+										<Label text="Date"/>
+										<Text text="{TextAnalysis>/date}"/>
+										<Label text="Amount / Currency"/>
+										<Text text="{TextAnalysis>/amount} {TextAnalysis>/currency}"/>
+										<Label text="Company"/>
+										<Text text="{TextAnalysis>/company}"/>
+										<Label text="Location"/>
+										<Text text="{TextAnalysis>/city}"/>
+									</f:content>
+								</f:SimpleForm>
+							</IconTabFilter>
 						</items>
 					</IconTabBar>
 				</content>
@@ -69,7 +89,7 @@
 								multiple="false" fileType="png,jpeg,jpg,bmp,tiff,tif,pdf"
 								mimeType="image/png,image/jpg,image/jpeg,image/bmp,image/tiff,application/pdf,application/x-pdf" typeMissmatch="fileTypeMissmatch"
 								change="getOCR" custom:mode="xhr" uploadUrl="{ML_Api>/urlOCR}"></unified:FileUploader>
-						    <Button text="Rerun OCR" press="onRerunOCRBtn" ariaLabelledBy="actionButtonLabel"/>
+							<Button text="Rerun OCR" press="onRerunOCRBtn" ariaLabelledBy="actionButtonLabel"/>
 						</content>
 					</Toolbar>
 				</footer>

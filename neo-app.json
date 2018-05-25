@@ -23,6 +23,20 @@
 			"name": "ml-api"
 		},
 		"description": "ML API destination"
+	}, {
+		"path": "/ta-token",
+		"target": {
+			"type": "destination",
+			"name": "textanalysis-token"
+		},
+		"description": "SAP Text Analysis Entity Extraction Token"
+	}, {
+		"path": "/ta",
+		"target": {
+			"type": "destination",
+			"name": "textanalysis"
+		},
+		"description": "SAP Text Analysis Entity Extraction"
 	}],
 	"sendWelcomeFileRedirect": true,
 	"headerWhiteList": [
