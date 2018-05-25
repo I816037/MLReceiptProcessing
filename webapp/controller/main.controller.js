@@ -255,7 +255,6 @@ sap.ui.define([
 					that.processTextAnalysisAPI(response);
 				},
 				error: function(jqXHR, status, err) {
-					console.log("Error occured");
 				}
 			});
 		},
